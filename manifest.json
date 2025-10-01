@@ -1,0 +1,32 @@
+{
+  "name": "Chat Bubble Viz",
+  "organization": "Your Company",
+  "description": "Renders chat messages as left/right/center bubbles by role.",
+  "logoUrl": "https://raw.githubusercontent.com/<your-username>/looker-chat-viz/main/logo.png",
+  "supportUrl": "https://github.com/<your-username>/looker-chat-viz",
+  "components": [
+    {
+      "name": "Chat Bubbles",
+      "id": "chat_bubbles",
+      "description": "Chat-style visualization (timestamp, sender, message).",
+      "iconUrl": "https://raw.githubusercontent.com/<your-username>/looker-chat-viz/main/logo.png",
+      "resource": [
+        { "type": "text/html", "url": "https://<your-username>.github.io/looker-chat-viz/index.html" },
+        { "type": "text/css",  "url": "https://<your-username>.github.io/looker-chat-viz/styles.css" },
+        { "type": "text/javascript", "url": "https://<your-username>.github.io/looker-chat-viz/chat.js" }
+      ],
+      "fields": {
+        "dimensions": [
+          { "id": "timestamp", "name": "Timestamp" },
+          { "id": "sender",    "name": "Sender" },
+          { "id": "message",   "name": "Message" }
+        ],
+        "metrics": []
+      },
+      "options": {},
+      "allowedDomains": [
+        "https://<your-username>.github.io"
+      ]
+    }
+  ]
+}
