@@ -6,20 +6,16 @@
   "supportUrl": "https://github.com/alvaro-marcano/looker-chat-viz",
   "components": [
     {
-      "name": "Chat Bubbles",
       "id": "chat_bubbles",
+      "name": "Chat Bubbles",
       "description": "Chat-style visualization (timestamp, sender, message).",
       "iconUrl": "https://alvaro-marcano.github.io/looker-chat-viz/logo.png",
-      "resource": [
-        { "type": "text/html", "url": "https://alvaro-marcano.github.io/looker-chat-viz/index.html" },
-        { "type": "text/css",  "url": "https://alvaro-marcano.github.io/looker-chat-viz/styles.css" },
-        { "type": "text/javascript", "url": "https://alvaro-marcano.github.io/looker-chat-viz/chat.js" }
-      ],
+      "script": "https://alvaro-marcano.github.io/looker-chat-viz/chat.js",
       "fields": {
         "dimensions": [
           { "id": "timestamp", "name": "Timestamp" },
-          { "id": "sender",    "name": "Sender" },
-          { "id": "message",   "name": "Message" }
+          { "id": "sender", "name": "Sender" },
+          { "id": "message", "name": "Message" }
         ],
         "metrics": []
       },
