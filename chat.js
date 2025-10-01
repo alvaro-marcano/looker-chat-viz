@@ -1,15 +1,35 @@
-// Looker Studio injects `dscc` into the iframe automatically.
-// We subscribe to table data and render a chat-like layout.
-
 (function () {
   const rootId = "chat-root";
+
+  // ensure a root exists even when LS doesn't load index.html
+  let existing = document.getElementById(rootId);
+  if (!existing) {
+    existing = document.createElement("div");
+    existing.id = rootId;
+    existing.className = "chat-container";
+    document.body.appendChild(existing);
+  }
+
+  // inject minimal CSS so we don’t depend on styles.css
+  const style = document.createElement("style");
+  style.textContent = `
+    .chat-container{box-sizing:border-box;width:100%;height:100%;padding:12px;background:#0f1115;color:#e9eef7;overflow:auto;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .chat{display:flex;flex-direction:column;gap:8px}
+    .bubble{max-width:520px;padding:10px 12px;border-radius:18px;line-height:1.35;word-break:break-word;white-space:pre-wrap;box-shadow:0 1px 2px rgba(0,0,0,.22)}
+    .left{align-self:flex-start;background:#eaf2ff;color:#0b2142}
+    .right{align-self:flex-end;background:#fff5cc;color:#3a2b00}
+    .center{align-self:center;background:#eaf7ee;color:#12351c}
+    .meta{font-size:11px;opacity:.65;margin-bottom:4px;display:flex;gap:8px}
+    .meta .sender{font-weight:600}
+  `;
+  document.head.appendChild(style);
 
   const roleFromSender = (sender) => {
     if (!sender) return "left";
     const s = String(sender).toLowerCase();
     if (s.includes("agent") || s.includes("support") || s.includes("herocare")) return "right";
     if (s.includes("system") || s.includes("bot")) return "center";
-    return "left"; // customer/stakeholder by default
+    return "left"; // default customer/stakeholder
   };
 
   const safe = (v) =>
@@ -21,7 +41,6 @@
       .replace(/'/g, "&#39;");
 
   const fmtTime = (ts) => {
-    // Works with Date, ISO string, or raw text fallback
     try {
       const d = new Date(ts);
       if (!isNaN(d)) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -36,28 +55,11 @@
     if (!el) return;
     el.innerHTML = "";
 
-    // dscc.tableTransform shape:
-    // data.tables.DEFAULT = [{ <fieldId>: value, <fieldId2>: value2, ... }, ...]
     const rows = (data && data.tables && (data.tables.DEFAULT || data.tables.default)) || [];
-
-    // Gather dimension field IDs in the order the user adds them:
-    // We expect [timestamp, sender, message]
-    const dimOrder = (data && data.fields && (data.fields.dimensions || data.fields.dimensionDescriptors)) || [];
     const keys = rows[0] ? Object.keys(rows[0]) : [];
-
-    // Fallback: assume first 3 keys correspond to ts/sender/message if we can't read descriptors
     let tsKey = keys[0], senderKey = keys[1], msgKey = keys[2];
 
-    // If field descriptors are present, prefer them (first three dimensions)
-    try {
-      if (dimOrder.length >= 3) {
-        tsKey = dimOrder[0].id || tsKey;
-        senderKey = dimOrder[1].id || senderKey;
-        msgKey = dimOrder[2].id || msgKey;
-      }
-    } catch (_) {}
-
-    // Sort ascending by timestamp if possible
+    // sort by timestamp if possible
     const sorted = rows.slice().sort((a, b) => {
       const A = new Date(a[tsKey]);
       const B = new Date(b[tsKey]);
@@ -91,13 +93,9 @@
     el.appendChild(wrapper);
   };
 
-  // Subscribe using the table transform (the platform injects `dscc`)
-  // If `dscc` is not present, fail silently (useful when testing outside LS).
   if (window.dscc && window.dscc.subscribeToData) {
     window.dscc.subscribeToData(draw, { transform: window.dscc.tableTransform });
   } else {
-    // Optional local testing: render a tiny placeholder
-    const el = document.getElementById(rootId);
-    if (el) el.textContent = "Waiting for Looker Studio data…";
+    document.getElementById(rootId).textContent = "Waiting for Looker Studio data…";
   }
 })();
